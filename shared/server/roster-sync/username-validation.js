@@ -8,6 +8,7 @@
  */
 
 var _fetch = globalThis.fetch;
+var githubApiUrl = require('../github-host').githubApiUrl;
 
 var BATCH_DELAY_MS = 200;
 
@@ -38,7 +39,7 @@ async function validateGithubCandidates(candidates, options) {
 
   for (var i = 0; i < candidates.length; i++) {
     try {
-      var url = 'https://api.github.com/users/' + encodeURIComponent(candidates[i]);
+      var url = githubApiUrl() + '/users/' + encodeURIComponent(candidates[i]);
       var res = await _getFetch()(url, { headers: headers });
       if (res.ok) {
         var data = await res.json();

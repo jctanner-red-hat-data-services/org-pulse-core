@@ -11,6 +11,7 @@
  *   GITHUB_APP_PRIVATE_KEY_FILE — Path to PEM file (production, volume-mounted)
  *   GITHUB_APP_PRIVATE_KEY     — Inline PEM string (local dev fallback)
  *   GITHUB_APP_INSTALLATION_ID — Installation ID for the target org
+ *   GITHUB_API_URL             — REST API base (see shared/server/github-host)
  *
  * If none are set, the module is a no-op and getTokenSync() returns null,
  * allowing fallback to a classic GITHUB_TOKEN PAT.
@@ -20,8 +21,8 @@
 
 const crypto = require('crypto');
 const fs = require('fs');
+const { githubApiUrl } = require('./github-host');
 
-const GITHUB_API = 'https://api.github.com';
 const REFRESH_INTERVAL_MS = 50 * 60 * 1000; // 50 minutes (tokens expire at 60)
 const JWT_EXPIRY_SECONDS = 10 * 60; // 10 minutes
 
@@ -63,7 +64,7 @@ function base64url(str) {
  * Exchange a JWT for an installation access token.
  */
 async function requestInstallationToken(jwt, installationId) {
-  const res = await fetch(`${GITHUB_API}/app/installations/${installationId}/access_tokens`, {
+  const res = await fetch(`${githubApiUrl()}/app/installations/${installationId}/access_tokens`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${jwt}`,

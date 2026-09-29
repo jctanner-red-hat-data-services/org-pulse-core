@@ -6,10 +6,11 @@
  * Supports TTL-based skip for recently-fetched users.
  *
  * Requires a GITHUB_TOKEN for authentication, passed via options.token.
- * Batches users into groups to minimize API calls.
+ * Batches users into groups to minimize API calls. The endpoint follows
+ * GITHUB_API_URL (see shared/server/github-host).
  */
 
-const GITHUB_GRAPHQL_URL = 'https://api.github.com/graphql';
+const { githubGraphqlUrl } = require('../../../../shared/server/github-host');
 const BATCH_SIZE = 5; // Uses history query (larger response), so smaller batches
 const BATCH_DELAY_MS = 2000;
 const DEFAULT_TTL_MS = 12 * 60 * 60 * 1000; // 12 hours
@@ -19,7 +20,7 @@ function delay(ms) {
 }
 
 async function graphqlRequest(query, token) {
-  const response = await fetch(GITHUB_GRAPHQL_URL, {
+  const response = await fetch(githubGraphqlUrl(), {
     method: 'POST',
     headers: {
       'Authorization': `bearer ${token}`,

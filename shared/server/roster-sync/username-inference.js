@@ -10,6 +10,8 @@
  * attribution of contributions from namesquatted accounts.
  */
 
+const { githubApiUrl } = require('../github-host');
+
 const BATCH_DELAY_MS = 200;
 
 function delay(ms) {
@@ -91,7 +93,7 @@ async function fetchGithubOrgMembers(orgName, githubToken) {
   let page = 1;
 
   while (true) {
-    const url = `https://api.github.com/orgs/${encodeURIComponent(orgName)}/members?per_page=100&page=${page}`;
+    const url = `${githubApiUrl()}/orgs/${encodeURIComponent(orgName)}/members?per_page=100&page=${page}`;
     const res = await fetch(url, { headers });
 
     if (!res.ok) {
@@ -113,7 +115,7 @@ async function fetchGithubOrgMembers(orgName, githubToken) {
   console.log('[username-inference] Fetching GitHub user profiles for matching...');
   for (let i = 0; i < members.length; i++) {
     try {
-      const res = await fetch(`https://api.github.com/users/${encodeURIComponent(members[i].login)}`, { headers });
+      const res = await fetch(`${githubApiUrl()}/users/${encodeURIComponent(members[i].login)}`, { headers });
       if (res.ok) {
         const profile = await res.json();
         members[i].name = profile.name || null;
